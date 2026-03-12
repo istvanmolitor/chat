@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-      <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Regisztráció</h1>
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-6 sm:p-8">
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-5 sm:mb-6 text-center">Regisztráció</h1>
 
       <form @submit.prevent="handleRegister" class="space-y-4">
         <!-- Name -->

@@ -23,15 +23,15 @@
       </div>
 
       <!-- Profile card -->
-      <div v-else-if="user" class="bg-white rounded-xl shadow-sm p-8 max-w-lg">
+      <div v-else-if="user" class="bg-white rounded-xl shadow-sm p-5 sm:p-8 w-full sm:max-w-lg">
         <!-- Avatar -->
-        <div class="flex items-center gap-5 mb-8">
-          <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-2xl shrink-0">
+        <div class="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xl sm:text-2xl shrink-0">
             {{ initials(user.name) }}
           </div>
-          <div>
-            <h1 class="text-xl font-bold text-gray-800">{{ user.name }}</h1>
-            <p class="text-sm text-gray-400">{{ user.email }}</p>
+          <div class="min-w-0">
+            <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">{{ user.name }}</h1>
+            <p class="text-sm text-gray-400 truncate">{{ user.email }}</p>
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl shadow-sm mt-6 max-w-lg flex flex-col">
+  <div class="bg-white rounded-xl shadow-sm mt-6 w-full sm:max-w-lg flex flex-col">
     <!-- Header -->
     <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

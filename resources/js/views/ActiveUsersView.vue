@@ -1,10 +1,10 @@
 <template>
   <AppLayout>
     <div>
-      <h1 class="text-2xl font-bold text-gray-800 mb-6">Aktív felhasználók</h1>
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Aktív felhasználók</h1>
 
       <!-- Search input -->
-      <div class="mb-4 max-w-sm">
+      <div class="mb-4 w-full sm:max-w-sm">
         <input
           v-model="searchQuery"
           type="search"
@@ -56,11 +56,11 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-6 flex items-center justify-between">
+        <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p class="text-sm text-gray-500">
             {{ from }}–{{ to }} / {{ total }} felhasználó
           </p>
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             <button
               :disabled="currentPage <= 1"
               @click="fetchPage(currentPage - 1)"
