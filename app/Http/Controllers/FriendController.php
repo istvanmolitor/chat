@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\Friendship;
 use App\Repositories\FriendRepository;
 use App\Repositories\UserRepository;
@@ -137,42 +138,24 @@ class FriendController extends Controller
     /**
      * Return all accepted friends of the authenticated user.
      */
-    public function friends(Request $request): JsonResponse
+    public function friends(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
     {
         $friends = $this->friendRepository->getFriends($request->user());
 
-        return response()->json($friends->map(fn ($u) => [
-            'id'             => $u->id,
-            'name'           => $u->name,
-            'email'          => $u->email,
-            'last_active_at' => $u->last_active_at?->toIso8601String(),
-            'is_active'      => $u->isActive(),
-        ])->values());
+        return UserResource::collection($friends);
     }
 
     /**
      * Return paginated accepted friends of the authenticated user, with optional name search.
      */
-    public function friendsPaginated(Request $request): JsonResponse
+    public function friendsPaginated(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
     {
         $search = $request->query('search');
         $perPage = (int) $request->query('per_page', 10);
 
         $paginator = $this->friendRepository->getFriendsPaginated($request->user(), $search ?: null, $perPage);
 
-        return response()->json([
-            'data'          => collect($paginator->items())->map(fn ($u) => [
-                'id'             => $u->id,
-                'name'           => $u->name,
-                'email'          => $u->email,
-                'last_active_at' => $u->last_active_at?->toIso8601String(),
-                'is_active'      => $u->isActive(),
-            ])->values(),
-            'current_page'  => $paginator->currentPage(),
-            'last_page'     => $paginator->lastPage(),
-            'per_page'      => $paginator->perPage(),
-            'total'         => $paginator->total(),
-        ]);
+        return UserResource::collection($paginator);
     }
 
     /**
@@ -184,11 +167,7 @@ class FriendController extends Controller
 
         return response()->json($requests->map(fn ($f) => [
             'friendship_id' => $f->id,
-            'user'          => [
-                'id'    => $f->user->id,
-                'name'  => $f->user->name,
-                'email' => $f->user->email,
-            ],
+            'user'          => new UserResource($f->user),
             'created_at' => $f->created_at->toIso8601String(),
         ])->values());
     }

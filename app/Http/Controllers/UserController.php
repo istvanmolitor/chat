@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserController extends Controller
 {
@@ -13,19 +15,19 @@ class UserController extends Controller
     /**
      * Return a paginated list of currently active users.
      */
-    public function activeUsers(Request $request): JsonResponse
+    public function activeUsers(Request $request): ResourceCollection
     {
         $perPage = min((int) $request->query('per_page', 10), 100);
         $search = $request->query('search') ?: null;
         $paginator = $this->userRepository->activeUsers($perPage, $search);
 
-        return response()->json($paginator);
+        return UserResource::collection($paginator);
     }
 
     /**
      * Return public profile data for a single user.
      */
-    public function profile(int $id): JsonResponse
+    public function profile(int $id): UserResource|JsonResponse
     {
         $user = $this->userRepository->find($id);
 
@@ -33,13 +35,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        return response()->json([
-            'id'             => $user->id,
-            'name'           => $user->name,
-            'email'          => $user->email,
-            'last_active_at' => $user->last_active_at?->toIso8601String(),
-            'is_active'      => $user->isActive(),
-        ]);
+        return new UserResource($user);
     }
 }
 

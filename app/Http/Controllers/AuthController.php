@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -36,7 +37,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Registration successful. Please check your email to verify your account.',
-            'user'    => $user,
+            'user'    => new UserResource($user),
         ], 201);
     }
 
@@ -58,7 +59,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful.',
-            'user'    => Auth::user(),
+            'user'    => new UserResource(Auth::user()),
         ]);
     }
 
@@ -78,9 +79,9 @@ class AuthController extends Controller
     /**
      * Return the authenticated user.
      */
-    public function user(Request $request): JsonResponse
+    public function user(Request $request): UserResource
     {
-        return response()->json($request->user());
+        return new UserResource($request->user());
     }
 
     /**
