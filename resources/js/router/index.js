@@ -27,6 +27,11 @@ const routes = [
         meta: { requiresAuth: true },
     },
     {
+        path: '/email/verify/:id/:hash',
+        name: 'email-verify-callback',
+        component: () => import('../views/EmailVerifyCallbackView.vue'),
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/',
     },
