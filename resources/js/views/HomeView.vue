@@ -29,7 +29,14 @@
           <svg class="mx-auto mb-3 w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a4 4 0 00-5.356-3.765M9 20H4v-2a4 4 0 015.356-3.765M15 7a4 4 0 11-8 0 4 4 0 018 0zm6 4a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          {{ search ? 'Nincs találat erre a névre.' : 'Még nincs egy ismerősöd sem.' }}
+          <p v-if="search">Nincs találat erre a névre.</p>
+          <p v-else>
+            Még nincs egy ismerősöd sem. Találd meg az ismerőseid az
+            <RouterLink :to="{ name: 'active-users' }" class="text-indigo-600 hover:text-indigo-700 underline">
+              aktív felhasználók
+            </RouterLink>
+            között!
+          </p>
         </div>
 
         <!-- Friends list -->

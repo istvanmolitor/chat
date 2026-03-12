@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $perPage = min((int) $request->query('per_page', 10), 100);
         $search = $request->query('search') ?: null;
-        $paginator = $this->userRepository->activeUsers($perPage, $search);
+        $paginator = $this->userRepository->activeUsers($perPage, $search, $request->user()?->id);
 
         return UserResource::collection($paginator);
     }
@@ -40,4 +40,3 @@ class UserController extends Controller
         return new UserResource($user);
     }
 }
-

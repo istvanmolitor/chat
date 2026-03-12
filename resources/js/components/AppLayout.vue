@@ -12,7 +12,7 @@
               class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition"
               active-class="text-indigo-600 border-b-2 border-indigo-600 pb-0.5"
             >
-              Kezdőlap
+              Ismerősöeim
             </RouterLink>
             <RouterLink
               :to="{ name: 'active-users' }"

@@ -11,7 +11,7 @@ interface UserRepositoryInterface
     /**
      * Return a paginated list of active users, optionally filtered by name.
      */
-    public function activeUsers(int $perPage = 10, ?string $search = null): LengthAwarePaginator;
+    public function activeUsers(int $perPage = 10, ?string $search = null, ?int $excludeUserId = null): LengthAwarePaginator;
 
     /**
      * Update the last_active_at timestamp for the given user to now.
@@ -30,4 +30,3 @@ interface UserRepositoryInterface
      */
     public function all(): Collection;
 }
-

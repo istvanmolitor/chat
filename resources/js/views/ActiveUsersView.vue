@@ -48,9 +48,8 @@
               <p class="text-sm font-medium text-gray-800 truncate">{{ user.name }}</p>
               <p class="text-xs text-gray-400 truncate">{{ user.email }}</p>
             </div>
-            <span class="flex items-center gap-1.5 text-xs text-green-600 font-medium shrink-0">
-              <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
-              Aktív
+            <span class="text-xs text-gray-500 shrink-0">
+              Utoljára aktív: {{ user.last_active_at ? formatDate(user.last_active_at) : 'Soha' }}
             </span>
             <span v-if="auth.user?.id !== user.id" @click.prevent class="shrink-0">
               <FriendButton :user-id="user.id" />
@@ -175,7 +174,16 @@ function initials(name) {
     .toUpperCase();
 }
 
+function formatDate(iso) {
+  return new Intl.DateTimeFormat('hu-HU', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(iso));
+}
+
 onMounted(() => fetchPage(1));
 </script>
-
 

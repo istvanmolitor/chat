@@ -12,12 +12,13 @@ class UserRepository implements UserRepositoryInterface
     /**
      * Return a paginated list of active users, optionally filtered by name.
      */
-    public function activeUsers(int $perPage = 10, ?string $search = null): LengthAwarePaginator
+    public function activeUsers(int $perPage = 10, ?string $search = null, ?int $excludeUserId = null): LengthAwarePaginator
     {
         return User::query()
             ->whereNotNull('last_active_at')
             ->where('last_active_at', '>=', now()->subMinutes(config('app.user_active_threshold_minutes')))
-            ->when($search, fn ($q) => $q->where('name', 'like', '%' . $search . '%'))
+            ->when($excludeUserId !== null, fn ($query) => $query->whereKeyNot($excludeUserId))
+            ->when($search, fn ($q) => $q->where('name', 'like', '%'.$search.'%'))
             ->orderByDesc('last_active_at')
             ->paginate($perPage);
     }
@@ -49,4 +50,3 @@ class UserRepository implements UserRepositoryInterface
         return User::all();
     }
 }
-
