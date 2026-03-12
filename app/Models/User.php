@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\VerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -66,5 +68,51 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerifyEmail());
+    }
+
+    // -------------------------------------------------------------------------
+    // Friendship relations
+    // -------------------------------------------------------------------------
+
+    /**
+     * Friendship records where this user sent the request.
+     *
+     * @return HasMany<Friendship>
+     */
+    public function sentFriendRequests(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'user_id');
+    }
+
+    /**
+     * Friendship records where this user received the request.
+     *
+     * @return HasMany<Friendship>
+     */
+    public function receivedFriendRequests(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'friend_id');
+    }
+
+    /**
+     * Return all accepted friends (both directions).
+     *
+     * @return Collection<int, User>
+     */
+    public function friends(): Collection
+    {
+        $sent = $this->sentFriendRequests()
+            ->accepted()
+            ->with('friend')
+            ->get()
+            ->pluck('friend');
+
+        $received = $this->receivedFriendRequests()
+            ->accepted()
+            ->with('user')
+            ->get()
+            ->pluck('user');
+
+        return $sent->merge($received)->values();
     }
 }

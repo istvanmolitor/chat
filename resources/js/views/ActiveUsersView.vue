@@ -48,9 +48,12 @@
               <p class="text-sm font-medium text-gray-800 truncate">{{ user.name }}</p>
               <p class="text-xs text-gray-400 truncate">{{ user.email }}</p>
             </div>
-            <span class="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+            <span class="flex items-center gap-1.5 text-xs text-green-600 font-medium shrink-0">
               <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
               Aktív
+            </span>
+            <span v-if="auth.user?.id !== user.id" @click.prevent class="shrink-0">
+              <FriendButton :user-id="user.id" />
             </span>
           </RouterLink>
         </div>
@@ -100,7 +103,11 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import AppLayout from '../components/AppLayout.vue';
+import FriendButton from '../components/FriendButton.vue';
+import { useAuthStore } from '../stores/auth.js';
 import api from '../api/axios.js';
+
+const auth = useAuthStore();
 
 const PER_PAGE = 10;
 

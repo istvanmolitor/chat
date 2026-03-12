@@ -29,10 +29,14 @@
           <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xl sm:text-2xl shrink-0">
             {{ initials(user.name) }}
           </div>
-          <div class="min-w-0">
+          <div class="flex-1 min-w-0">
             <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">{{ user.name }}</h1>
             <p class="text-sm text-gray-400 truncate">{{ user.email }}</p>
           </div>
+          <FriendButton
+            v-if="user.is_active && auth.user?.id !== user.id"
+            :user-id="user.id"
+          />
         </div>
 
         <!-- Details -->
@@ -73,9 +77,12 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import AppLayout from '../components/AppLayout.vue';
 import ChatBox from '../components/ChatBox.vue';
+import FriendButton from '../components/FriendButton.vue';
+import { useAuthStore } from '../stores/auth.js';
 import api from '../api/axios.js';
 
 const route = useRoute();
+const auth = useAuthStore();
 
 const user = ref(null);
 const loading = ref(false);

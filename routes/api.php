@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FriendController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -37,6 +38,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Messages
     Route::get('/messages/{userId}', [MessageController::class, 'conversation']);
     Route::post('/messages/{userId}', [MessageController::class, 'send']);
+
+    // Friendships
+    Route::get('/friends', [FriendController::class, 'friends']);
+    Route::get('/friends/requests', [FriendController::class, 'pendingRequests']);
+    Route::get('/friends/status/{id}', [FriendController::class, 'status']);
+    Route::post('/friends/request/{id}', [FriendController::class, 'sendRequest']);
+    Route::post('/friends/accept/{friendshipId}', [FriendController::class, 'acceptRequest']);
+    Route::post('/friends/decline/{friendshipId}', [FriendController::class, 'declineRequest']);
+    Route::delete('/friends/{id}', [FriendController::class, 'remove']);
 
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {
