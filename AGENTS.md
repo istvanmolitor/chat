@@ -1,4 +1,12 @@
 <laravel-boost-guidelines>
+=== project rules ===
+
+# Project-Specific Rules
+
+- **MINDIG** használj `vendor/bin/sail`-t minden parancs futtatásához (php, artisan, composer, npm). Soha ne futtass `php artisan`, `composer` vagy `npm` parancsot közvetlenül!
+- Példák: `vendor/bin/sail artisan db:seed`, `vendor/bin/sail artisan migrate`, `vendor/bin/sail npm run build`, `vendor/bin/sail composer install`.
+- Ha a Sail konténerek nem futnak, indítsd el: `vendor/bin/sail up -d`.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines

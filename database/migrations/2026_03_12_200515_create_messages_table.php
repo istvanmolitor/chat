@@ -18,9 +18,6 @@ return new class extends Migration
             $table->text('body');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-
-            $table->index(['sender_id', 'receiver_id']);
-            $table->index(['receiver_id', 'sender_id']);
         });
     }
 
