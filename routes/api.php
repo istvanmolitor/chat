@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/active', [UserController::class, 'activeUsers']);
     Route::get('/users/active/paginated', [UserController::class, 'activeUsersPaginated']);
     Route::get('/users/{id}', [UserController::class, 'profile']);
+
+    // Messages
+    Route::get('/messages/{userId}', [MessageController::class, 'conversation']);
+    Route::post('/messages/{userId}', [MessageController::class, 'send']);
 
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {

@@ -61,6 +61,9 @@
           </div>
         </dl>
       </div>
+
+      <!-- Chat -->
+      <ChatBox v-if="user" :user-id="user.id" />
     </div>
   </AppLayout>
 </template>
@@ -69,6 +72,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import AppLayout from '../components/AppLayout.vue';
+import ChatBox from '../components/ChatBox.vue';
 import api from '../api/axios.js';
 
 const route = useRoute();
