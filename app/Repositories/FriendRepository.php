@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Friendship;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use LogicException;
 use RuntimeException;
@@ -104,6 +105,30 @@ class FriendRepository
     public function getFriends(User $user): Collection
     {
         return $user->friends();
+    }
+
+    /**
+     * Return paginated accepted friends of the given user, optionally filtered by name.
+     *
+     * @return LengthAwarePaginator<User>
+     */
+    public function getFriendsPaginated(User $user, ?string $search = null, int $perPage = 10): LengthAwarePaginator
+    {
+        $friendIds = Friendship::where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)->orWhere('friend_id', $user->id);
+            })
+            ->accepted()
+            ->get()
+            ->map(fn ($f) => $f->user_id === $user->id ? $f->friend_id : $f->user_id);
+
+        $query = User::whereIn('id', $friendIds)
+            ->orderBy('name');
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        return $query->paginate($perPage);
     }
 
     /**

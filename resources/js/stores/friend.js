@@ -7,6 +7,30 @@ export const useFriendStore = defineStore('friend', () => {
     const statusCache = ref({});
     const loading = ref({});
 
+    // Friends list (paginated)
+    const friendsList = ref([]);
+    const friendsLoading = ref(false);
+    const friendsMeta = ref({ current_page: 1, last_page: 1, per_page: 10, total: 0 });
+
+    async function fetchFriendsPaginated(page = 1, search = '', perPage = 10) {
+        friendsLoading.value = true;
+        try {
+            const params = { page, per_page: perPage };
+            if (search) params.search = search;
+            const { data } = await api.get('/friends/paginated', { params });
+            friendsList.value = data.data;
+            friendsMeta.value = {
+                current_page: data.current_page,
+                last_page: data.last_page,
+                per_page: data.per_page,
+                total: data.total,
+            };
+            return data;
+        } finally {
+            friendsLoading.value = false;
+        }
+    }
+
     async function fetchStatus(userId) {
         loading.value[userId] = true;
         try {
@@ -77,6 +101,10 @@ export const useFriendStore = defineStore('friend', () => {
         removeFriend,
         getStatus,
         isLoading,
+        friendsList,
+        friendsLoading,
+        friendsMeta,
+        fetchFriendsPaginated,
     };
 });
 

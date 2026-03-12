@@ -151,6 +151,31 @@ class FriendController extends Controller
     }
 
     /**
+     * Return paginated accepted friends of the authenticated user, with optional name search.
+     */
+    public function friendsPaginated(Request $request): JsonResponse
+    {
+        $search = $request->query('search');
+        $perPage = (int) $request->query('per_page', 10);
+
+        $paginator = $this->friendRepository->getFriendsPaginated($request->user(), $search ?: null, $perPage);
+
+        return response()->json([
+            'data'          => collect($paginator->items())->map(fn ($u) => [
+                'id'             => $u->id,
+                'name'           => $u->name,
+                'email'          => $u->email,
+                'last_active_at' => $u->last_active_at?->toIso8601String(),
+                'is_active'      => $u->isActive(),
+            ])->values(),
+            'current_page'  => $paginator->currentPage(),
+            'last_page'     => $paginator->lastPage(),
+            'per_page'      => $paginator->perPage(),
+            'total'         => $paginator->total(),
+        ]);
+    }
+
+    /**
      * Return all incoming pending friend requests for the authenticated user.
      */
     public function pendingRequests(Request $request): JsonResponse
