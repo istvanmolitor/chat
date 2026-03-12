@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\Friendship;
-use App\Repositories\FriendRepository;
-use App\Repositories\UserRepository;
+use App\Repositories\Contracts\FriendRepositoryInterface;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -15,8 +15,8 @@ use RuntimeException;
 class FriendController extends Controller
 {
     public function __construct(
-        private readonly FriendRepository $friendRepository,
-        private readonly UserRepository $userRepository,
+        private readonly FriendRepositoryInterface $friendRepository,
+        private readonly UserRepositoryInterface $userRepository,
     ) {}
 
     /**

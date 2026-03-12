@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
-use App\Repositories\UserRepository;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserController extends Controller
 {
-    public function __construct(private readonly UserRepository $userRepository) {}
+    public function __construct(private readonly UserRepositoryInterface $userRepository) {}
 
     /**
      * Return a paginated list of currently active users.

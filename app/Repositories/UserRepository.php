@@ -3,10 +3,11 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
     /**
      * Return a paginated list of active users, optionally filtered by name.

@@ -3,9 +3,10 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Repositories\Contracts\AuthRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
 
-class AuthRepository
+class AuthRepository implements AuthRepositoryInterface
 {
     /**
      * Create a new user with hashed password.

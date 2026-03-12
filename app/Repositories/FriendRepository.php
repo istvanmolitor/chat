@@ -4,12 +4,13 @@ namespace App\Repositories;
 
 use App\Models\Friendship;
 use App\Models\User;
+use App\Repositories\Contracts\FriendRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use LogicException;
 use RuntimeException;
 
-class FriendRepository
+class FriendRepository implements FriendRepositoryInterface
 {
     /**
      * Send a friend request from $sender to $recipient.

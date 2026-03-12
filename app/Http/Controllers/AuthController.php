@@ -6,7 +6,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Repositories\AuthRepository;
+use App\Repositories\Contracts\AuthRepositoryInterface;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     public function __construct(
-        private readonly AuthRepository $authRepository,
+        private readonly AuthRepositoryInterface $authRepository,
     ) {}
 
     /**
