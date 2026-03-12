@@ -29,7 +29,8 @@ class UserController extends Controller
     public function activeUsersPaginated(Request $request): JsonResponse
     {
         $perPage = min((int) $request->query('per_page', 10), 100);
-        $paginator = $this->userRepository->getActiveUsersPaginated($perPage);
+        $search = $request->query('search') ?: null;
+        $paginator = $this->userRepository->getActiveUsersPaginated($perPage, $search);
 
         return response()->json($paginator);
     }

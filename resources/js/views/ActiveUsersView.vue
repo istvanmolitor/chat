@@ -3,6 +3,16 @@
     <div>
       <h1 class="text-2xl font-bold text-gray-800 mb-6">Aktív felhasználók</h1>
 
+      <!-- Search input -->
+      <div class="mb-4 max-w-sm">
+        <input
+          v-model="searchQuery"
+          type="search"
+          placeholder="Keresés név szerint…"
+          class="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
+        />
+      </div>
+
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center py-16">
         <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -18,7 +28,7 @@
 
       <!-- Empty state -->
       <div v-else-if="users.length === 0" class="text-center py-16 text-gray-400 text-lg">
-        Jelenleg nincs aktív felhasználó.
+        {{ searchQuery ? 'Nincs találat erre a névre.' : 'Jelenleg nincs aktív felhasználó.' }}
       </div>
 
       <!-- User list -->
@@ -88,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import AppLayout from '../components/AppLayout.vue';
 import api from '../api/axios.js';
 
@@ -102,14 +112,22 @@ const lastPage = ref(1);
 const total = ref(0);
 const from = ref(0);
 const to = ref(0);
+const searchQuery = ref('');
+
+let debounceTimer = null;
+
+watch(searchQuery, () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => fetchPage(1), 350);
+});
 
 async function fetchPage(page = 1) {
   loading.value = true;
   error.value = null;
   try {
-    const { data } = await api.get('/users/active/paginated', {
-      params: { page, per_page: PER_PAGE },
-    });
+    const params = { page, per_page: PER_PAGE };
+    if (searchQuery.value.trim()) params.search = searchQuery.value.trim();
+    const { data } = await api.get('/users/active/paginated', { params });
     users.value = data.data;
     currentPage.value = data.current_page;
     lastPage.value = data.last_page;

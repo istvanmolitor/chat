@@ -22,13 +22,14 @@ class UserRepository
     }
 
     /**
-     * Return a paginated list of active users.
+     * Return a paginated list of active users, optionally filtered by name.
      */
-    public function getActiveUsersPaginated(int $perPage = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getActiveUsersPaginated(int $perPage = 10, ?string $search = null): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return User::query()
             ->whereNotNull('last_active_at')
             ->where('last_active_at', '>=', now()->subMinutes(config('app.user_active_threshold_minutes')))
+            ->when($search, fn ($q) => $q->where('name', 'like', '%' . $search . '%'))
             ->orderByDesc('last_active_at')
             ->paginate($perPage);
     }
