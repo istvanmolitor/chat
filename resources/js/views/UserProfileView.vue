@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout :full-width="true">
     <div>
       <!-- Back button -->
       <button
@@ -22,52 +22,55 @@
         {{ error }}
       </div>
 
-      <!-- Profile card -->
-      <div v-else-if="user" class="bg-white rounded-xl shadow-sm p-5 sm:p-8 w-full sm:max-w-lg">
-        <!-- Avatar -->
-        <div class="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
-          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xl sm:text-2xl shrink-0">
-            {{ initials(user.name) }}
+      <!-- Profile + Chat layout -->
+      <div v-else-if="user" class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div class="bg-white rounded-xl shadow-sm p-5 sm:p-8 w-full md:col-span-1">
+          <!-- Avatar -->
+          <div class="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xl sm:text-2xl shrink-0">
+              {{ initials(user.name) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">{{ user.name }}</h1>
+              <p class="text-sm text-gray-400 truncate">{{ user.email }}</p>
+            </div>
+            <FriendButton
+              v-if="user.is_active && auth.user?.id !== user.id"
+              :user-id="user.id"
+            />
           </div>
-          <div class="flex-1 min-w-0">
-            <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">{{ user.name }}</h1>
-            <p class="text-sm text-gray-400 truncate">{{ user.email }}</p>
-          </div>
-          <FriendButton
-            v-if="user.is_active && auth.user?.id !== user.id"
-            :user-id="user.id"
-          />
+
+          <!-- Details -->
+          <dl class="divide-y divide-gray-100">
+            <div class="py-3 flex justify-between items-center">
+              <dt class="text-sm text-gray-500">Státusz</dt>
+              <dd>
+                <span
+                  v-if="user.is_active"
+                  class="flex items-center gap-1.5 text-sm text-green-600 font-medium"
+                >
+                  <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+                  Aktív
+                </span>
+                <span v-else class="flex items-center gap-1.5 text-sm text-gray-400 font-medium">
+                  <span class="w-2 h-2 rounded-full bg-gray-300 inline-block"></span>
+                  Inaktív
+                </span>
+              </dd>
+            </div>
+            <div class="py-3 flex justify-between items-center">
+              <dt class="text-sm text-gray-500">Utoljára aktív</dt>
+              <dd class="text-sm text-gray-700">
+                {{ user.last_active_at ? formatDate(user.last_active_at) : 'Soha' }}
+              </dd>
+            </div>
+          </dl>
         </div>
 
-        <!-- Details -->
-        <dl class="divide-y divide-gray-100">
-          <div class="py-3 flex justify-between items-center">
-            <dt class="text-sm text-gray-500">Státusz</dt>
-            <dd>
-              <span
-                v-if="user.is_active"
-                class="flex items-center gap-1.5 text-sm text-green-600 font-medium"
-              >
-                <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
-                Aktív
-              </span>
-              <span v-else class="flex items-center gap-1.5 text-sm text-gray-400 font-medium">
-                <span class="w-2 h-2 rounded-full bg-gray-300 inline-block"></span>
-                Inaktív
-              </span>
-            </dd>
-          </div>
-          <div class="py-3 flex justify-between items-center">
-            <dt class="text-sm text-gray-500">Utoljára aktív</dt>
-            <dd class="text-sm text-gray-700">
-              {{ user.last_active_at ? formatDate(user.last_active_at) : 'Soha' }}
-            </dd>
-          </div>
-        </dl>
+        <div class="md:col-span-2">
+          <ChatBox :user-id="user.id" />
+        </div>
       </div>
-
-      <!-- Chat -->
-      <ChatBox v-if="user" :user-id="user.id" />
     </div>
   </AppLayout>
 </template>
@@ -125,4 +128,3 @@ function formatDate(iso) {
 
 onMounted(fetchUser);
 </script>
-

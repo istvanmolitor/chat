@@ -28,7 +28,7 @@
 
       <!-- Empty state -->
       <div v-else-if="users.length === 0" class="text-center py-16 text-gray-400 text-lg">
-        {{ searchQuery ? 'Nincs találat erre a névre.' : 'Jelenleg nincs aktív felhasználó.' }}
+        {{ searchQuery ? 'Nincs találat erre a névre.' : 'Jelenleg rajtad kívül nincs aktív felhasználó.' }}
       </div>
 
       <!-- User list -->

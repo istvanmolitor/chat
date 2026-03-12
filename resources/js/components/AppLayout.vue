@@ -81,7 +81,7 @@
     </nav>
 
     <!-- Page content -->
-    <main class="max-w-5xl mx-auto px-4 py-6 sm:py-8">
+    <main :class="props.fullWidth ? 'w-full px-4 py-6 sm:py-8' : 'max-w-5xl mx-auto px-4 py-6 sm:py-8'">
       <slot />
     </main>
   </div>
@@ -93,6 +93,13 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth.js';
 import logo from '../../images/logo.webp';
 
+const props = defineProps({
+  fullWidth: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const auth = useAuthStore();
 const router = useRouter();
 const mobileOpen = ref(false);
@@ -102,4 +109,3 @@ async function handleLogout() {
   router.push({ name: 'login' });
 }
 </script>
-
