@@ -3,12 +3,29 @@
 namespace App\Notifications;
 
 use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
 class VerifyEmail extends BaseVerifyEmail
 {
+    /**
+     * Build the mail representation of the notification.
+     */
+    public function toMail(mixed $notifiable): MailMessage
+    {
+        $verificationUrl = $this->verificationUrl($notifiable);
+
+        return (new MailMessage)
+            ->subject('Megerősítés szükséges: e-mail cím hitelesítése')
+            ->view('emails.verify-email', [
+                'verificationUrl' => $verificationUrl,
+                'appName' => config('app.name'),
+                'logoUrl' => url('/images/logo.webp'),
+            ]);
+    }
+
     /**
      * Build the email verification URL pointing to the SPA frontend.
      *
@@ -22,7 +39,7 @@ class VerifyEmail extends BaseVerifyEmail
             'verification.verify',
             Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
             [
-                'id'   => $notifiable->getKey(),
+                'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );
@@ -33,12 +50,11 @@ class VerifyEmail extends BaseVerifyEmail
 
         // Build the frontend URL: /email/verify/{id}/{hash}?expires=...&signature=...
         $frontendBase = rtrim(config('app.frontend_url', config('app.url')), '/');
-        $id           = $notifiable->getKey();
-        $hash         = sha1($notifiable->getEmailForVerification());
+        $id = $notifiable->getKey();
+        $hash = sha1($notifiable->getEmailForVerification());
 
         return $frontendBase
-            . '/email/verify/' . $id . '/' . $hash
-            . '?' . http_build_query($queryParams);
+            .'/email/verify/'.$id.'/'.$hash
+            .'?'.http_build_query($queryParams);
     }
 }
-
