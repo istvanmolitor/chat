@@ -2,34 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Repositories\AuthRepository;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly AuthRepository $authRepository,
+    ) {}
+
     /**
      * Register a new user.
      */
-    public function register(Request $request): JsonResponse
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
-
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = $this->authRepository->createUser(
+            $request->name,
+            $request->email,
+            $request->password,
+        );
 
         event(new Registered($user));
 
@@ -44,12 +43,8 @@ class AuthController extends Controller
     /**
      * Log in an existing user.
      */
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $request->validate([
-            'email'    => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
 
         if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return response()->json(['message' => 'The provided credentials are incorrect.'], 422);
