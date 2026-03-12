@@ -35,18 +35,18 @@
           v-for="msg in messages"
           :key="msg.id"
           class="flex"
-          :class="msg.sender_id === authUser.id ? 'justify-end' : 'justify-start'"
+          :class="isOwnMessage(msg) ? 'justify-end' : 'justify-start'"
         >
           <div
             class="max-w-[75%] px-4 py-2 rounded-2xl text-sm leading-relaxed wrap-break-word"
-            :class="msg.sender_id === authUser.id
+            :class="isOwnMessage(msg)
               ? 'bg-indigo-600 text-white rounded-br-sm'
               : 'bg-gray-100 text-gray-800 rounded-bl-sm'"
           >
             {{ msg.body }}
             <div
               class="text-[10px] mt-1 text-right"
-              :class="msg.sender_id === authUser.id ? 'text-indigo-200' : 'text-gray-400'"
+              :class="isOwnMessage(msg) ? 'text-indigo-200' : 'text-gray-400'"
             >
               {{ formatTime(msg.created_at) }}
             </div>
@@ -181,7 +181,14 @@ function formatTime(iso) {
     day: 'numeric',
   }).format(new Date(iso));
 }
-</script>
 
+function isOwnMessage(message) {
+  if (!authUser?.value?.id) {
+    return false;
+  }
+
+  return Number(message.sender_id) === Number(authUser.value.id);
+}
+</script>
 
 
