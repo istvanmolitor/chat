@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Friendship;
 use App\Models\User;
+use App\Notifications\FriendRequestReceivedNotification;
 use App\Repositories\Contracts\FriendRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,8 +18,8 @@ class FriendRepository implements FriendRepositoryInterface
      *
      * Both users must be email-verified and currently active.
      *
-     * @throws RuntimeException  if either user is not verified or not active.
-     * @throws LogicException    if the users are the same or a request already exists.
+     * @throws RuntimeException if either user is not verified or not active.
+     * @throws LogicException if the users are the same or a request already exists.
      */
     public function sendRequest(User $sender, User $recipient): Friendship
     {
@@ -40,11 +41,15 @@ class FriendRepository implements FriendRepositoryInterface
             throw new LogicException('A friendship or request already exists between these users.');
         }
 
-        return Friendship::create([
-            'user_id'   => $sender->id,
+        $friendship = Friendship::create([
+            'user_id' => $sender->id,
             'friend_id' => $recipient->id,
-            'status'    => 'pending',
+            'status' => 'pending',
         ]);
+
+        $recipient->notify(new FriendRequestReceivedNotification($sender));
+
+        return $friendship;
     }
 
     /**
@@ -53,7 +58,7 @@ class FriendRepository implements FriendRepositoryInterface
      * Only the recipient of the request ($acceptor must be friend_id) may accept it.
      * The acceptor must also be currently active.
      *
-     * @throws RuntimeException  if the acceptor is not active or is not the intended recipient.
+     * @throws RuntimeException if the acceptor is not active or is not the intended recipient.
      */
     public function acceptRequest(Friendship $friendship, User $acceptor): Friendship
     {
@@ -106,8 +111,8 @@ class FriendRepository implements FriendRepositoryInterface
     public function getFriends(User $user, ?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
         $friendIds = Friendship::where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)->orWhere('friend_id', $user->id);
-            })
+            $q->where('user_id', $user->id)->orWhere('friend_id', $user->id);
+        })
             ->accepted()
             ->get()
             ->map(fn ($f) => $f->user_id === $user->id ? $f->friend_id : $f->user_id);
@@ -116,7 +121,7 @@ class FriendRepository implements FriendRepositoryInterface
             ->orderBy('name');
 
         if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
         }
 
         return $query->paginate($perPage);
@@ -155,4 +160,3 @@ class FriendRepository implements FriendRepositoryInterface
             ->first();
     }
 }
-
