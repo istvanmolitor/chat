@@ -1,12 +1,6 @@
 <template>
   <AppLayout>
     <div class="max-w-2xl mx-auto py-8 sm:py-12 px-4">
-      <!-- Heading -->
-      <div class="mb-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">Üdvözöljük, {{ auth.user?.name }}!</h1>
-        <p class="text-gray-500 text-sm">Az e-mail-címe sikeresen megerősítésre került. ✅</p>
-      </div>
-
       <!-- Friends section -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-gray-700 mb-4">Ismerőseim</h2>

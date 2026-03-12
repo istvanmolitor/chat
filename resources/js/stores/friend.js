@@ -17,8 +17,8 @@ export const useFriendStore = defineStore('friend', () => {
         try {
             const params = { page, per_page: perPage };
             if (search) params.search = search;
-            const { data } = await api.get('/friends/paginated', { params });
-            friendsList.value = data.data;
+            const { data } = await api.get('/friends', { params });
+            friendsList.value = data.data ?? [];
             friendsMeta.value = {
                 current_page: data.current_page,
                 last_page: data.last_page,
