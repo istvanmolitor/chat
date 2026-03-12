@@ -8,6 +8,7 @@ use App\Repositories\FriendRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use LogicException;
 use RuntimeException;
 
@@ -136,24 +137,14 @@ class FriendController extends Controller
     }
 
     /**
-     * Return all accepted friends of the authenticated user.
-     */
-    public function friends(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
-    {
-        $friends = $this->friendRepository->getFriends($request->user());
-
-        return UserResource::collection($friends);
-    }
-
-    /**
      * Return paginated accepted friends of the authenticated user, with optional name search.
      */
-    public function friendsPaginated(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
+    public function friends(Request $request): ResourceCollection
     {
         $search = $request->query('search');
         $perPage = (int) $request->query('per_page', 10);
 
-        $paginator = $this->friendRepository->getFriendsPaginated($request->user(), $search ?: null, $perPage);
+        $paginator = $this->friendRepository->getFriends($request->user(), $search ?: null, $perPage);
 
         return UserResource::collection($paginator);
     }

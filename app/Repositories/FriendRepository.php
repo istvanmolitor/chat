@@ -98,21 +98,11 @@ class FriendRepository
     }
 
     /**
-     * Return all accepted friends of the given user.
-     *
-     * @return Collection<int, User>
-     */
-    public function getFriends(User $user): Collection
-    {
-        return $user->friends();
-    }
-
-    /**
      * Return paginated accepted friends of the given user, optionally filtered by name.
      *
      * @return LengthAwarePaginator<User>
      */
-    public function getFriendsPaginated(User $user, ?string $search = null, int $perPage = 10): LengthAwarePaginator
+    public function getFriends(User $user, ?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
         $friendIds = Friendship::where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)->orWhere('friend_id', $user->id);
