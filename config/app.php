@@ -125,4 +125,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | User Active Threshold
+    |--------------------------------------------------------------------------
+    |
+    | The number of minutes after which a user is considered inactive.
+    |
+    */
+
+    'user_active_threshold_minutes' => env('USER_ACTIVE_THRESHOLD_MINUTES', 3),
+
 ];

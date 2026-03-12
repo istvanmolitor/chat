@@ -19,10 +19,12 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var list<string>
      */
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'last_active_at',
     ];
 
     /**
@@ -44,8 +46,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'last_active_at'    => 'datetime',
         ];
+    }
+
+    /**
+     * Determine if the user was active within the last ACTIVE_THRESHOLD_MINUTES minutes.
+     */
+    public function isActive(): bool
+    {
+        return $this->last_active_at !== null
+            && $this->last_active_at->greaterThan(now()->subMinutes(config('app.user_active_threshold_minutes')));
     }
 
     /**

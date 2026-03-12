@@ -9,6 +9,12 @@ const routes = [
         meta: { requiresAuth: true, requiresVerified: true },
     },
     {
+        path: '/active-users',
+        name: 'active-users',
+        component: () => import('../views/ActiveUsersView.vue'),
+        meta: { requiresAuth: true, requiresVerified: true },
+    },
+    {
         path: '/register',
         name: 'register',
         component: () => import('../views/RegisterView.vue'),
