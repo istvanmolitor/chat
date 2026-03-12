@@ -134,7 +134,7 @@ async function fetchPage(page = 1) {
   try {
     const params = { page, per_page: PER_PAGE };
     if (searchQuery.value.trim()) params.search = searchQuery.value.trim();
-    const { data } = await api.get('/users/active/paginated', { params });
+    const { data } = await api.get('/users/active', { params });
     users.value = data.data;
     currentPage.value = data.current_page;
     lastPage.value = data.last_page;

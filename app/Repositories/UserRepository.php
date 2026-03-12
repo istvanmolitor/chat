@@ -3,28 +3,15 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository
 {
     /**
-     * Return all users who were active within the last ACTIVE_THRESHOLD_MINUTES minutes.
-     *
-     * @return Collection<int, User>
-     */
-    public function getActiveUsers(): Collection
-    {
-        return User::query()
-            ->whereNotNull('last_active_at')
-            ->where('last_active_at', '>=', now()->subMinutes(config('app.user_active_threshold_minutes')))
-            ->orderByDesc('last_active_at')
-            ->get();
-    }
-
-    /**
      * Return a paginated list of active users, optionally filtered by name.
      */
-    public function getActiveUsersPaginated(int $perPage = 10, ?string $search = null): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function activeUsers(int $perPage = 10, ?string $search = null): LengthAwarePaginator
     {
         return User::query()
             ->whereNotNull('last_active_at')
