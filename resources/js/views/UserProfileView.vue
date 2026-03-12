@@ -93,7 +93,7 @@ async function fetchUser() {
   error.value = null;
   try {
     const { data } = await api.get(`/users/${route.params.id}`);
-    user.value = data;
+    user.value = data.data;
   } catch (e) {
     error.value = e?.response?.status === 404
       ? 'A felhasználó nem található.'

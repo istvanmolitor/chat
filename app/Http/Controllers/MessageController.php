@@ -2,86 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
+use App\Http\Requests\Message\SendMessageRequest;
+use App\Http\Resources\MessageResource;
 use App\Models\User;
+use App\Repositories\Contracts\MessageRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use LogicException;
 
 class MessageController extends Controller
 {
+    public function __construct(
+        private readonly MessageRepositoryInterface $messageRepository,
+    ) {}
+
     /**
      * Return the conversation between the authenticated user and the given user.
      */
-    public function conversation(Request $request, int $userId): JsonResponse
+    public function conversation(Request $request, User $user): AnonymousResourceCollection
     {
-        $other = User::find($userId);
+        $authUser = $request->user();
 
-        if (! $other) {
-            return response()->json(['message' => 'User not found.'], 404);
-        }
+        $messages = $this->messageRepository->getConversation($authUser, $user);
 
-        $authId = $request->user()->id;
+        $this->messageRepository->markAsRead($user, $authUser);
 
-        $messages = Message::with(['sender:id,name', 'receiver:id,name'])
-            ->where(function ($q) use ($authId, $userId) {
-                $q->where('sender_id', $authId)->where('receiver_id', $userId);
-            })
-            ->orWhere(function ($q) use ($authId, $userId) {
-                $q->where('sender_id', $userId)->where('receiver_id', $authId);
-            })
-            ->orderBy('created_at')
-            ->get()
-            ->map(fn (Message $m) => [
-                'id'         => $m->id,
-                'body'       => $m->body,
-                'sender_id'  => $m->sender_id,
-                'read_at'    => $m->read_at?->toIso8601String(),
-                'created_at' => $m->created_at->toIso8601String(),
-            ]);
-
-        // Mark unread messages sent by the other user as read
-        Message::where('sender_id', $userId)
-            ->where('receiver_id', $authId)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
-
-        return response()->json($messages);
+        return MessageResource::collection($messages);
     }
 
     /**
      * Send a new message to the given user.
      */
-    public function send(Request $request, int $userId): JsonResponse
+    public function send(SendMessageRequest $request, User $user): JsonResponse
     {
-        $other = User::find($userId);
-
-        if (! $other) {
-            return response()->json(['message' => 'User not found.'], 404);
+        try {
+            $message = $this->messageRepository->send($request->user(), $user, $request->input('body'));
+        } catch (LogicException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        $authId = $request->user()->id;
-
-        if ($authId === $userId) {
-            return response()->json(['message' => 'Cannot send a message to yourself.'], 422);
-        }
-
-        $request->validate([
-            'body' => ['required', 'string', 'max:5000'],
-        ]);
-
-        $message = Message::create([
-            'sender_id'   => $authId,
-            'receiver_id' => $userId,
-            'body'        => $request->input('body'),
-        ]);
-
-        return response()->json([
-            'id'         => $message->id,
-            'body'       => $message->body,
-            'sender_id'  => $message->sender_id,
-            'read_at'    => null,
-            'created_at' => $message->created_at->toIso8601String(),
-        ], 201);
+        return (new MessageResource($message))
+            ->response()
+            ->setStatusCode(201);
     }
 }
-

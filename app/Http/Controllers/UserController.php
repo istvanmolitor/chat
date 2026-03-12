@@ -10,7 +10,9 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserController extends Controller
 {
-    public function __construct(private readonly UserRepositoryInterface $userRepository) {}
+    public function __construct(
+        private readonly UserRepositoryInterface $userRepository
+    ) {}
 
     /**
      * Return a paginated list of currently active users.

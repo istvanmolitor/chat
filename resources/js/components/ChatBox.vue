@@ -113,7 +113,7 @@ async function fetchMessages() {
   loadingMessages.value = true;
   try {
     const { data } = await api.get(`/messages/${props.userId}`);
-    messages.value = data;
+    messages.value = data.data;
     await scrollToBottom();
   } catch {
     // silently fail on background poll
@@ -130,7 +130,7 @@ async function sendMessage() {
   sendError.value = null;
   try {
     const { data } = await api.post(`/messages/${props.userId}`, { body });
-    messages.value.push(data);
+    messages.value.push(data.data);
     newBody.value = '';
     await scrollToBottom();
   } catch (e) {
@@ -150,8 +150,8 @@ async function scrollToBottom() {
 async function pollMessages() {
   try {
     const { data } = await api.get(`/messages/${props.userId}`);
-    if (data.length !== messages.value.length) {
-      messages.value = data;
+    if (data.data.length !== messages.value.length) {
+      messages.value = data.data;
       await scrollToBottom();
     }
   } catch {
