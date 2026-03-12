@@ -24,10 +24,11 @@
       <!-- User list -->
       <template v-else>
         <div class="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
-          <div
+          <RouterLink
             v-for="user in users"
             :key="user.id"
-            class="flex items-center gap-4 px-5 py-4"
+            :to="{ name: 'user-profile', params: { id: user.id } }"
+            class="flex items-center gap-4 px-5 py-4 hover:bg-indigo-50 transition"
           >
             <!-- Avatar initials -->
             <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm shrink-0">
@@ -41,7 +42,7 @@
               <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
               Aktív
             </span>
-          </div>
+          </RouterLink>
         </div>
 
         <!-- Pagination -->

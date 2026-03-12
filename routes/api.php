@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/users/active', [UserController::class, 'activeUsers']);
     Route::get('/users/active/paginated', [UserController::class, 'activeUsersPaginated']);
+    Route::get('/users/{id}', [UserController::class, 'profile']);
 
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {
