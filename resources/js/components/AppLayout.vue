@@ -4,7 +4,7 @@
     <nav class="bg-white shadow-sm">
       <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-6">
-          <span class="text-xl font-bold text-indigo-600">Chat</span>
+          <img :src="logo" alt="Chat logo" class="h-8 w-auto" />
           <RouterLink
             :to="{ name: 'home' }"
             class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition"
@@ -42,6 +42,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth.js';
+import logo from '../../images/logo.webp';
 
 const auth = useAuthStore();
 const router = useRouter();
