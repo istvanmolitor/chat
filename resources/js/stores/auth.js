@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import api, { getCsrfCookie } from '../api/axios.js';
+import api, { clearAuthToken, getCsrfCookie, storeAuthToken } from '../api/axios.js';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
@@ -10,11 +10,27 @@ export const useAuthStore = defineStore('auth', () => {
     const isLoggedIn = computed(() => user.value !== null);
     const isVerified = computed(() => user.value?.email_verified_at !== null);
 
+    function extractUser(payload) {
+        if (payload?.user) {
+            return payload.user;
+        }
+
+        if (payload?.data) {
+            return payload.data;
+        }
+
+        return payload;
+    }
+
     async function fetchUser() {
         try {
             const { data } = await api.get('/user');
-            user.value = data;
-        } catch {
+            user.value = extractUser(data);
+        } catch (e) {
+            if (e.response?.status === 401) {
+                clearAuthToken();
+            }
+
             user.value = null;
         }
     }
@@ -30,7 +46,10 @@ export const useAuthStore = defineStore('auth', () => {
                 password,
                 password_confirmation: passwordConfirmation,
             });
-            user.value = data.user;
+            user.value = extractUser(data);
+            if (data.token) {
+                storeAuthToken(data.token);
+            }
         } catch (e) {
             error.value = e.response?.data?.errors ?? { general: [e.response?.data?.message ?? 'Registration failed.'] };
             throw e;
@@ -45,7 +64,10 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             await getCsrfCookie();
             const { data } = await api.post('/login', { email, password, remember });
-            user.value = data.user;
+            user.value = extractUser(data);
+            if (data.token) {
+                storeAuthToken(data.token);
+            }
         } catch (e) {
             error.value = e.response?.data?.errors ?? { general: [e.response?.data?.message ?? 'Login failed.'] };
             throw e;
@@ -59,6 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             await api.post('/logout');
         } finally {
+            clearAuthToken();
             user.value = null;
             loading.value = false;
         }
@@ -76,4 +99,3 @@ export const useAuthStore = defineStore('auth', () => {
 
     return { user, loading, error, isLoggedIn, isVerified, fetchUser, register, login, logout, resendVerification };
 });
-

@@ -33,10 +33,12 @@ class AuthController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+        $token = $user->createToken('spa')->plainTextToken;
 
         return response()->json([
             'message' => 'Registration successful. Please check your email to verify your account.',
-            'user'    => new UserResource($user),
+            'user' => new UserResource($user),
+            'token' => $token,
         ], 201);
     }
 
@@ -50,11 +52,17 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided credentials are incorrect.'], 422);
         }
 
-        $request->session()->regenerate();
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+        /** @var User $user */
+        $user = Auth::user();
+        $token = $user->createToken('spa')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful.',
-            'user'    => new UserResource(Auth::user()),
+            'user' => new UserResource($user),
+            'token' => $token,
         ]);
     }
 
@@ -63,10 +71,16 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        if ($request->user() !== null) {
+            $request->user()->tokens()->delete();
+        }
+
         Auth::guard('web')->logout();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json(['message' => 'Logged out.']);
     }
@@ -112,4 +126,3 @@ class AuthController extends Controller
         return response()->json(['message' => 'Verification link sent.']);
     }
 }
-
