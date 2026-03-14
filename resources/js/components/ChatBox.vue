@@ -11,8 +11,21 @@
     <!-- Message list -->
     <div
       ref="scrollEl"
-      class="flex-1 overflow-y-auto px-6 py-4 space-y-3 min-h-55 max-h-90"
+      class="flex-1 overflow-y-auto px-6 py-4 space-y-3 min-h-55 max-h-90 relative"
+      @scroll="handleScroll"
     >
+      <!-- Scroll to bottom button -->
+      <button
+        v-if="showScrollToBottom"
+        @click="scrollToBottom"
+        class="sticky bottom-4 left-1/2 -translate-x-1/2 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg border border-gray-100 transition-all z-10 flex items-center gap-1 text-xs font-medium cursor-pointer"
+        title="Ugrás az utolsó üzenethez"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 13l-7 7-7-7m14-8l-7 7-7-7" />
+        </svg>
+        Új üzenetek
+      </button>
       <!-- Loading -->
       <div v-if="loadingMessages" class="flex justify-center py-8">
         <svg class="animate-spin h-6 w-6 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -107,6 +120,7 @@ const newBody = ref('');
 const sending = ref(false);
 const sendError = ref(null);
 const scrollEl = ref(null);
+const showScrollToBottom = ref(false);
 
 let pollTimer = null;
 
@@ -115,7 +129,7 @@ async function fetchMessages() {
   try {
     const { data } = await api.get(`/messages/${props.userId}`);
     messages.value = data.data;
-    await scrollToBottom();
+    await scrollToBottom('instant');
   } catch {
     // silently fail on background poll
   } finally {
@@ -141,11 +155,24 @@ async function sendMessage() {
   }
 }
 
-async function scrollToBottom() {
+async function scrollToBottom(behavior = 'smooth') {
   await nextTick();
   if (scrollEl.value) {
-    scrollEl.value.scrollTop = scrollEl.value.scrollHeight;
+    scrollEl.value.scrollTo({
+      top: scrollEl.value.scrollHeight,
+      behavior,
+    });
   }
+}
+
+function handleScroll() {
+  if (!scrollEl.value) return;
+
+  const threshold = 100; // px
+  const { scrollTop, scrollHeight, clientHeight } = scrollEl.value;
+  const distanceFromBottom = scrollHeight - clientHeight - scrollTop;
+
+  showScrollToBottom.value = distanceFromBottom > threshold;
 }
 
 async function pollMessages() {
