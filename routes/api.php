@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Messages
     Route::get('/messages/{user}', [MessageController::class, 'conversation']);
+    Route::get('/messages/{user}/unread', [MessageController::class, 'unread']);
     Route::post('/messages/{user}', [MessageController::class, 'send']);
 
     // Friendships
@@ -40,4 +41,3 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.send');
 });
-

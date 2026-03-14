@@ -16,6 +16,13 @@ interface MessageRepositoryInterface
     public function getConversation(User $authUser, User $other): Collection;
 
     /**
+     * Return unread messages sent by $sender to $receiver, ordered by creation time.
+     *
+     * @return Collection<int, Message>
+     */
+    public function getUnreadMessages(User $sender, User $receiver): Collection;
+
+    /**
      * Mark all unread messages sent by $sender to $receiver as read.
      */
     public function markAsRead(User $sender, User $receiver): void;
@@ -28,4 +35,3 @@ interface MessageRepositoryInterface
      */
     public function send(User $sender, User $receiver, string $body): Message;
 }
-

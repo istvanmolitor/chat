@@ -32,6 +32,20 @@ class MessageController extends Controller
     }
 
     /**
+     * Return unread messages from the given user to the authenticated user.
+     */
+    public function unread(Request $request, User $user): AnonymousResourceCollection
+    {
+        $authUser = $request->user();
+
+        $messages = $this->messageRepository->getUnreadMessages($user, $authUser);
+
+        $this->messageRepository->markAsRead($user, $authUser);
+
+        return MessageResource::collection($messages);
+    }
+
+    /**
      * Send a new message to the given user.
      */
     public function send(SendMessageRequest $request, User $user): JsonResponse

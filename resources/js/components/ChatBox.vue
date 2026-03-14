@@ -149,9 +149,17 @@ async function scrollToBottom() {
 
 async function pollMessages() {
   try {
-    const { data } = await api.get(`/messages/${props.userId}`);
-    if (data.data.length !== messages.value.length) {
-      messages.value = data.data;
+    const { data } = await api.get(`/messages/${props.userId}/unread`);
+    const unreadMessages = data.data ?? [];
+
+    if (unreadMessages.length > 0) {
+      const existingIds = new Set(messages.value.map((message) => Number(message.id)));
+      const newMessages = unreadMessages.filter((message) => !existingIds.has(Number(message.id)));
+
+      if (newMessages.length > 0) {
+        messages.value.push(...newMessages);
+      }
+
       await scrollToBottom();
     }
   } catch {
@@ -163,6 +171,17 @@ watch(() => props.userId, () => {
   messages.value = [];
   fetchMessages();
 });
+
+watch(
+  () => messages.value.length,
+  async (newLength, oldLength) => {
+    if (newLength === oldLength) {
+      return;
+    }
+
+    await scrollToBottom();
+  }
+);
 
 onMounted(() => {
   fetchMessages();
@@ -190,5 +209,3 @@ function isOwnMessage(message) {
   return Number(message.sender_id) === Number(authUser.value.id);
 }
 </script>
-
-
