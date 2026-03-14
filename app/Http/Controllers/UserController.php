@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -29,14 +29,8 @@ class UserController extends Controller
     /**
      * Return public profile data for a single user.
      */
-    public function profile(int $id): UserResource|JsonResponse
+    public function profile(User $user): UserResource
     {
-        $user = $this->userRepository->find($id);
-
-        if (! $user) {
-            return response()->json(['message' => 'User not found.'], 404);
-        }
-
         return new UserResource($user);
     }
 }

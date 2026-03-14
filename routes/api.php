@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/users/active', [UserController::class, 'activeUsers']);
-    Route::get('/users/{id}', [UserController::class, 'profile']);
+    Route::get('/users/{user}', [UserController::class, 'profile']);
 
     // Messages
     Route::get('/messages/{user}', [MessageController::class, 'conversation']);
