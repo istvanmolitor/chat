@@ -87,6 +87,7 @@
 
 <script setup>
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import api from '../api/axios.js';
 import { useAuthStore } from '../stores/auth.js';
 
@@ -98,7 +99,7 @@ const props = defineProps({
 });
 
 const authStore = useAuthStore();
-const authUser = authStore.user;
+const { user: authUser } = storeToRefs(authStore);
 
 const messages = ref([]);
 const loadingMessages = ref(false);
@@ -202,7 +203,7 @@ function formatTime(iso) {
 }
 
 function isOwnMessage(message) {
-  if (!authUser?.value?.id) {
+  if (!authUser.value?.id) {
     return false;
   }
 

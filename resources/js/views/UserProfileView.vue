@@ -68,7 +68,16 @@
         </div>
 
         <div class="md:col-span-2">
-          <ChatBox :user-id="user.id" />
+          <ChatBox
+            v-if="isConfirmedFriend"
+            :user-id="user.id"
+          />
+          <div
+            v-else
+            class="bg-white rounded-xl shadow-sm w-full px-6 py-8 text-sm text-gray-500"
+          >
+            A chat csak visszaigazolt ismerősökkel érhető el.
+          </div>
         </div>
       </div>
     </div>
@@ -76,20 +85,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppLayout from '../components/AppLayout.vue';
 import ChatBox from '../components/ChatBox.vue';
 import FriendButton from '../components/FriendButton.vue';
 import { useAuthStore } from '../stores/auth.js';
+import { useFriendStore } from '../stores/friend.js';
 import api from '../api/axios.js';
 
 const route = useRoute();
 const auth = useAuthStore();
+const friendStore = useFriendStore();
 
 const user = ref(null);
 const loading = ref(false);
 const error = ref(null);
+
+const friendshipStatus = computed(() => {
+  if (!user.value) {
+    return null;
+  }
+
+  return friendStore.getStatus(user.value.id)?.status ?? null;
+});
+
+const isConfirmedFriend = computed(() => friendshipStatus.value === 'accepted');
 
 async function fetchUser() {
   loading.value = true;
@@ -127,4 +148,16 @@ function formatDate(iso) {
 }
 
 onMounted(fetchUser);
+
+watch(user, async (profileUser) => {
+  if (!profileUser || auth.user?.id === profileUser.id) {
+    return;
+  }
+
+  try {
+    await friendStore.fetchStatus(profileUser.id);
+  } catch {
+    // ignore friendship status lookup errors
+  }
+});
 </script>
