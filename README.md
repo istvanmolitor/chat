@@ -1,59 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Chat API - Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ez egy RESTful Chat API projekt, amely a Laravel 12 keretrendszerre épül. Lehetővé teszi a felhasználók regisztrációját, email-verifikációt, ismerősök kezelését és privát üzenetküldést.
 
-## About Laravel
+## Főbb funkciók
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Autentikáció**: Regisztráció, bejelentkezés és kijelentkezés Laravel Sanctum segítségével.
+- **Email-verifikáció**: Csak hitelesített email címmel rendelkező felhasználók használhatják a rendszert.
+- **Felhasználók kezelése**: Aktív felhasználók listázása (keresés és lapozás).
+- **Ismerősök kezelése**: Ismerősi felkérések küldése, elfogadása, elutasítása és ismerősök listázása.
+- **Üzenetküldés**: Szöveges üzenetek küldése ismerősök között, beszélgetés előzmények lekérdezése, olvasatlan üzenetek száma.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technológiai stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **PHP**: 8.3+ (a környezetben 8.5.3 fut)
+- **Framework**: Laravel 12
+- **Adatbázis**: MySQL / MariaDB
+- **Docker**: Laravel Sail
+- **Autentikáció**: Laravel Sanctum
 
-## Learning Laravel
+## Telepítés és beállítás
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+A projekt futtatásához Docker és Docker Compose szükséges (Laravel Sail használatával).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Egyszerű telepítés (Szkripttel)
 
-## Laravel Sponsors
+Ha a rendszeren elérhető a `bash`, futtathatod az automatizált telepítő szkriptet:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+chmod +x install.sh
+./install.sh
+```
 
-### Premium Partners
+### Manuális telepítés
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. **Projekt klónozása**
+   ```bash
+   git clone git@github.com:istvanmolitor/chat.git
+   cd chat
+   ```
 
-## Contributing
+2. **Függőségek telepítése**
+   ```bash
+   docker run --rm \
+       -u "$(id -u):$(id -g)" \
+       -v "$(pwd):/var/www/html" \
+       -w /var/www/html \
+       laravelsail/php84-composer:latest \
+       composer install --ignore-platform-reqs
+   ```
+   *(Megjegyzés: Ha van helyi composer-ed, futtathatod közvetlenül is, de a Sail-es konténer biztosítja a megfelelő környezetet.)*
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Környezeti változók beállítása**
+   ```bash
+   cp .env.example .env
+   ```
+   *(A `.env` fájlban ellenőrizd az adatbázis és mail beállításokat. Sail esetén az alapértelmezett értékek általában megfelelnek.)*
 
-## Code of Conduct
+4. **Sail elindítása**
+   ```bash
+   ./vendor/bin/sail up -d
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Alkalmazás kulcs generálása**
+   ```bash
+   ./vendor/bin/sail artisan key:generate
+   ```
 
-## Security Vulnerabilities
+6. **Adatbázis migrációk és seedelés**
+   ```bash
+   ./vendor/bin/sail artisan migrate --seed
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Használat (API Végpontok)
 
-## License
+Az API alapértelmezett URL-je: `http://localhost/api`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Hitelesítés (Public)
+- `POST /api/register` - Regisztráció (név, email, jelszó)
+- `POST /api/login` - Bejelentkezés (visszatér a Bearer tokennel)
+
+### Felhasználók (Auth required)
+- `GET /api/user` - Aktuális felhasználó adatai
+- `GET /api/users/active` - Aktív felhasználók listája (szűrhető: `?search=name`, lapozható)
+- `GET /api/users/{id}` - Felhasználó profilja
+
+### Ismerősök (Auth required)
+- `GET /api/friends` - Ismerősök listája
+- `GET /api/friends/requests` - Függőben lévő felkérések
+- `POST /api/friends/request/{userId}` - Ismerősi felkérés küldése
+- `POST /api/friends/accept/{friendshipId}` - Felkérés elfogadása
+- `POST /api/friends/decline/{friendshipId}` - Felkérés elutasítása
+- `DELETE /api/friends/{userId}` - Ismerős eltávolítása
+
+### Üzenetek (Auth required)
+- `GET /api/messages/{userId}` - Beszélgetés lekérdezése egy ismerőssel
+- `POST /api/messages/{userId}` - Üzenet küldése
+- `GET /api/messages/{userId}/unread` - Olvasatlan üzenetek száma
+
+## Tesztelés
+
+A tesztek futtatásához használd a következő parancsot:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+A fontosabb funkciók (regisztráció, ismerősök, üzenetküldés) a `tests/Feature` mappában található tesztekkel vannak lefedve.
+
+## Fejlesztés
+
+A kódformázáshoz a Laravel Pint-et használjuk:
+```bash
+./vendor/bin/sail bin pint
+```
