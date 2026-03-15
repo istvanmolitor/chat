@@ -49,4 +49,5 @@ echo "📦 Frontend függőségek telepítése és build..."
 ./vendor/bin/sail npm run build
 
 echo "✅ Telepítés sikeresen befejeződött!"
-echo "🌐 Az API elérhető: http://localhost/api"
+echo "🌐 Az alkalmazás elérhető: http://localhost"
+echo "🌐 A mailpit elérhető: http://localhost:8025"

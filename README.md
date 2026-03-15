@@ -16,6 +16,7 @@ Ez egy RESTful Chat API projekt, amely a Laravel 12 keretrendszerre épül. Lehe
 - **Framework**: Laravel 12
 - **Adatbázis**: MySQL / MariaDB
 - **Docker**: Laravel Sail
+- **Mailpit**: Email teszteléshez és megtekintéshez
 - **Autentikáció**: Laravel Sanctum
 
 ## Telepítés és beállítás
@@ -82,6 +83,11 @@ chmod +x install.sh
 ## Használat (API Végpontok)
 
 Az API alapértelmezett URL-je: `http://localhost/api`
+
+### Email tesztelés (Mailpit)
+
+A fejlesztés során kiküldött emaileket a Mailpit felületén lehet megtekinteni:
+- **Dashboard**: [http://localhost:8025](http://localhost:8025)
 
 ### Hitelesítés (Public)
 - `POST /api/register` - Regisztráció (név, email, jelszó)
