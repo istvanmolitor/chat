@@ -52,9 +52,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided credentials are incorrect.'], 422);
         }
 
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
         /** @var User $user */
         $user = Auth::user();
         $token = $user->createToken('spa')->plainTextToken;
@@ -76,11 +73,6 @@ class AuthController extends Controller
         }
 
         Auth::guard('web')->logout();
-
-        if ($request->hasSession()) {
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
 
         return response()->json(['message' => 'Logged out.']);
     }
