@@ -18,9 +18,13 @@ class DatabaseSeeder extends Seeder
         User::factory(70)->create();
         User::factory(30)->active()->create();
 
-        User::factory()->active()->create([
-            'name' => 'Test User',
+        User::updateOrCreate([
             'email' => 'test@example.com',
+        ], [
+            'name' => 'Test User',
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
+            'last_active_at' => now(),
         ]);
 
         $this->call(FriendshipSeeder::class);
