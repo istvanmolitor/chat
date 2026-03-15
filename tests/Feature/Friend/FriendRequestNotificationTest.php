@@ -19,8 +19,8 @@ class FriendRequestNotificationTest extends TestCase
     {
         Notification::fake();
 
-        $sender = User::factory()->active()->create();
-        $recipient = User::factory()->active()->create();
+        $sender = User::factory()->create(['last_active_at' => now()]);
+        $recipient = User::factory()->create(['last_active_at' => now()]);
 
         $this->actingAs($sender);
 
