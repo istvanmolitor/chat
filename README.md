@@ -27,6 +27,8 @@ A projekt futtatásához Docker és Docker Compose szükséges (Laravel Sail has
 Ha a rendszeren elérhető a `bash`, futtathatod az automatizált telepítő szkriptet:
 
 ```bash
+git clone git@github.com:istvanmolitor/chat.git
+cd chat
 chmod +x install.sh
 ./install.sh
 ```
@@ -69,6 +71,12 @@ chmod +x install.sh
 6. **Adatbázis migrációk és seedelés**
    ```bash
    ./vendor/bin/sail artisan migrate --seed
+   ```
+
+7. **Frontend függőségek telepítése és build**
+   ```bash
+   ./vendor/bin/sail npm install
+   ./vendor/bin/sail npm run build
    ```
 
 ## Használat (API Végpontok)

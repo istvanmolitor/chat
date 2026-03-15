@@ -43,5 +43,10 @@ echo "🔑 Alkalmazás kulcs generálása..."
 echo "🗄️ Adatbázis migrációk és seedelés..."
 ./vendor/bin/sail artisan migrate --seed
 
+# 6. Frontend build (Vite manifest hiba elkerülése)
+echo "📦 Frontend függőségek telepítése és build..."
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run build
+
 echo "✅ Telepítés sikeresen befejeződött!"
 echo "🌐 Az API elérhető: http://localhost/api"
